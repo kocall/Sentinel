@@ -20,10 +20,20 @@
     </properties>
 
     <dependencies>
+       <dependency>
+        <groupId> org.springframework.boot </groupId>
+        <artifactId> spring-boot-configuration-processor </artifactId>
+           <version>${spring.boot.version}</version>
+        <optional> true </optional>
+    </dependency>
+
+
+
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-web-servlet</artifactId>
@@ -102,7 +112,6 @@
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-nacos</artifactId>
-            <scope>test</scope>
         </dependency>
         <!-- for Apollo rule publisher sample -->
         <dependency>

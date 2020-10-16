@@ -18,8 +18,10 @@ package com.alibaba.csp.sentinel.dashboard.repository.metric;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.MetricEntity;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import com.alibaba.csp.sentinel.util.TimeUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,6 +50,8 @@ public class InMemoryMetricsRepository implements MetricsRepository<MetricEntity
 
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
+    @Value("${memory.ttl:300000}")
+    private long ttl;
 
     @Override
     public void save(MetricEntity entity) {
@@ -61,7 +65,7 @@ public class InMemoryMetricsRepository implements MetricsRepository<MetricEntity
                         @Override
                         protected boolean removeEldestEntry(Entry<Long, MetricEntity> eldest) {
                             // Metric older than {@link #MAX_METRIC_LIVE_TIME_MS} will be removed.
-                            return eldest.getKey() < TimeUtil.currentTimeMillis() - MAX_METRIC_LIVE_TIME_MS;
+                            return eldest.getKey() < TimeUtil.currentTimeMillis() - ttl;
                         }
                     }).put(entity.getTimestamp().getTime(), entity);
         } finally {
@@ -122,7 +126,8 @@ public class InMemoryMetricsRepository implements MetricsRepository<MetricEntity
         if (resourceMap == null) {
             return results;
         }
-        final long minTimeMs = System.currentTimeMillis() - 1000 * 60;
+        //默认resource 1min没有访问会被移除 wzhang
+        final long minTimeMs = System.currentTimeMillis() - ttl;
         Map<String, MetricEntity> resourceCount = new ConcurrentHashMap<>(32);
 
         readWriteLock.readLock().lock();
