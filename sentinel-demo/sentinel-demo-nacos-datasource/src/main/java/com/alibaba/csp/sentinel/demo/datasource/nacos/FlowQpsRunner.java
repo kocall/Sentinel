@@ -16,6 +16,7 @@
 package com.alibaba.csp.sentinel.demo.datasource.nacos;
 
 import java.util.Random;
+import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
